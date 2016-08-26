@@ -24,6 +24,7 @@
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
+	  <mainClass>edu.uga.cs.cs4370</mainClass>
         </configuration>
       </plugin>
     </plugins>

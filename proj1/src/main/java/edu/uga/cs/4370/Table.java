@@ -145,20 +145,6 @@ public class Table
 	Class []  colDomain = extractDom (colPositions, domain);
 	String [] newKey    = (Arrays.asList (attrs).containsAll (Arrays.asList (key))) ? key : attrs;
 
-	//  T O   B E   I M P L E M E N T E D
-	/*for (int i=0;i<tuples.size();i++)
-	    {
-		newTuple=new Comparable[attrs.length];
-		originalTuple=tuples.get(i);
-
-		for (int j=0;j<colPositions.length;j++)
-		    {
-			newTuple[j]=originalTuple[j];
-
-		    }
-		rows.add(newTuple);
-	    }
-	**/
 	for (int i=0;i<tuples.size();i++)
 	    {
 		newTuple=new Comparable[attrs.length];
@@ -204,7 +190,6 @@ public class Table
 
 	List <Comparable []> rows = new ArrayList <> ();
 
-	//  T O   B E   I M P L E M E N T E D
 	rows.add(this.index.get(keyVal));
 	
 	return new Table (name + count++, attribute, domain, key, rows);
@@ -219,30 +204,28 @@ public class Table
      * @return  a table representing the union
      */
 
-    public Table union (Table table2)
-    {
-	out.println ("RA> " + name + ".union (" + table2.name + ")");
-	if (! compatible (table2)) return null;
+    public Table union (Table table2) {
+		out.println ("RA> " + name + ".union (" + table2.name + ")");
+		if(!(compatible(table2))) return null;
 
-	List <Comparable []> rows = new ArrayList <> ();
-	if(compatible(table2)){//if compatible then do the operation
-	    for(Comparable[] temp1 : tuples){//adds all tuples from table 1
-		rows.add(temp1);
-	    }
-	    for(Comparable[] temp1 : table2.tuples){//adds tuple from table 2, also checks for duplicates
-		boolean unique = true;
-		for(Comparable[] temp2 : tuples){
-		    if(temp1.equals(temp2)){
-			unique = false;
+		List <Comparable []> rows = new ArrayList <> ();
+		if(compatible(table2)) {
+		    for(Comparable[] tmp : tuples) {
+				rows.add(tmp);
+		    }
+		    for(Comparable[] tmp : table2.tuples) {
+				boolean unique = true;
+					for(Comparable[] tmp2 : tuples) {
+						if(tmp.equals(tmp2)){
+							unique = false;
+						}
+					}
+				if(unique) {
+			    	rows.add(tmp);
+				}
 		    }
 		}
-		if(unique == true){
-		    rows.add(temp1);
-		}
-	    }
-	}
-
-	return new Table (name + count++, attribute, domain, key, rows);
+		return new Table (name + count++, attribute, domain, key, rows);
     } // union
 	
     
@@ -262,8 +245,6 @@ public class Table
 	if (! compatible (table2)) return null;
 
 	List <Comparable []> rows = new ArrayList <> ();
-
-	// TO BE IMPLEMENTED this.tuples
 
 	rows = this.tuples.stream()
 	    .filter(t->!(table2.getTuples().contains(t)))
@@ -317,13 +298,6 @@ public class Table
 		Comparable[] row = ArrayUtil.concat(rowTable1, equalRow);
 		rows.add(row);
 	    }
-
-
-	    //if rowtable1.getattributes == rowTable2.getAttributes
-	    //select rowtable2
-	    //concat rowtable1 and rowtable2
-	    //add to rows
-
 	}
 	System.out.println("end");
 
@@ -392,7 +366,6 @@ public class Table
 
 	Table finalTable = table.project(attributesToCheck);
 
-	// FIX - eliminate duplicate columns
 	return finalTable;
     } // join
     
@@ -655,15 +628,40 @@ public class Table
 
     public boolean equals(Table other){
 
-	boolean found = false;
-	for(Comparable[] movie : this.tuples){
-	    found = false;
-	    for(Comparable [] other_movie : other.getTuples()){
-		if(movie.equals(other_movie)) found = true;
-	    }
-	    if(!found) return false;
-	}
-	return true;	
+        boolean allMatch;
+        int comparableCt;
+    	boolean found = false;
+    	for(Comparable[] movie : this.tuples){
+        found = false;
+        for(Comparable [] other_movie : other.getTuples()){
+                Comparable test;
+                // System.out.println("Comparable 1: ");
+                for (Comparable p:movie){System.out.print(p.toString()+",");}
+                // System.out.println("\nComparable 2: ");
+                for (Comparable p:other_movie){System.out.print(p.toString()+",");}
+                // System.out.println("\n");
+                
+                allMatch=true;
+                comparableCt=0;
+                for (Comparable comp:movie)
+                {
+                    if (!comp.toString().equals(other_movie[comparableCt].toString()))
+                    {
+                        allMatch=false;
+                        System.out.println(comp.toString()+"!="+other_movie[comparableCt].toString());
+                        break;
+                    }
+                    comparableCt++;
+                }
+                if (allMatch)
+                {
+                    found=true;
+                    // System.out.println("Found!\n");
+                }
+        }
+        if(!found) return false;
+    }
+    return true;    
     } 
 
 } // Table class

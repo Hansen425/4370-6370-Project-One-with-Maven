@@ -36,6 +36,8 @@ public class TableTest extends TestCase{
 	Comparable [] film3 = { "Rambo", 1978, 100, "action", "Universal", 32355 };
        	Comparable [] film4 = {"Star_Wars",1977};
 	Comparable [] film5 = { "Star_Wars_2", 1980};
+	Comparable [] film6 = { "Rocky", 1985};
+	Comparable [] film7 = { "Rambo", 1978};
 
 	movie.insert(film0);
 	movie.insert(film1);
@@ -55,6 +57,8 @@ public class TableTest extends TestCase{
 
 	movie5.insert(film4);
 	movie5.insert(film5);
+	movie5.insert(film6);
+	movie5.insert(film7);
     }
     
     
@@ -115,6 +119,11 @@ public class TableTest extends TestCase{
 
     @Test
     public void testProject(){
+	System.out.println("movie5: ");
+	movie5.print();
+	Table project_test=movie.project("title year");
+	System.out.println("project_test:" );
+	project_test.print();
 	assertTrue(movie5.equals(movie.project("title year")));
     }
 
@@ -122,10 +131,10 @@ public class TableTest extends TestCase{
     @Test
     public void testEquiJoin(){
 	//ARRANGE
-	Table movie = new Table ("movie", "title year length genre studioName producerNo",
+	Table movie_cast = new Table ("movie_cast", "title year length genre studioName producerNo",
 				 "String Integer Integer String String Integer", "title year");
 
-	Table movie2 = new Table ("movie2", "title year actor1 actor2 actor3 actor4",
+	Table movie2_cast = new Table ("movie2_cast", "title year actor1 actor2 actor3 actor4",
 				  "String Integer String String String String", "title year");
 
 
@@ -135,29 +144,29 @@ public class TableTest extends TestCase{
 	Comparable [] film2 = { "Rocky", 1985, 200, "action", "Universal", 12125 };
 	Comparable [] film3 = { "Rambo", 1978, 100, "action", "Universal", 32355 };
 
-	movie.insert(film0);
-	movie.insert(film1);
-	movie.insert(film2);
-	movie.insert(film3);
-	movie.print();
+	movie_cast.insert(film0);
+	movie_cast.insert(film1);
+	movie_cast.insert(film2);
+	movie_cast.insert(film3);
+	movie_cast.print();
 
 	Comparable [] joinFilm0 = {"Star_Wars", 1977, "Han", "Luke", "Yoda", "Bob"};
 	Comparable [] joinFilm1 = {"Star_Wars_2", 1980, "Padme", "Jango", "Zam", "Joe"};
-	movie2.insert(joinFilm1);
-	movie2.insert(joinFilm0);
+	movie2_cast.insert(joinFilm1);
+	movie2_cast.insert(joinFilm0);
 
-	movie2.print();
+	movie2_cast.print();
 
 	//ACT
-	Table joinTable = movie.join("title year", "title year", movie2);//EquiJoin
+	Table joinTable = movie_cast.join("title year", "title year", movie2_cast);//EquiJoin
 	Table equiJoin_correct = new Table (
-					    "movie11", "title year length genre studioName producerNo title2 year2 actor1 actor2 actor3 actor4",
-					    "String Integer Integer String String Integer String Integer String String String String", "title year");
+       				    "movie11", "title year length genre studioName producerNo title2 year2 actor1 actor2 actor3 actor4",
+       				    "String Integer Integer String String Integer String Integer String String String String", "title year");
 
-	Comparable [] equiJoin_correct_film1 = { "Star_Wars", 1977, 124, "sciFi", "Fox", 12345, "Star_Wars", 1977, "Han", "Luke", "Yoda", "Bob"};
-	Comparable [] equiJoin_correct_film2 = { "Star_Wars_2", 1980, 124, "sciFi", "Fox", 12345, "Star_Wars_2", 1980, "Padme", "Jango", "Zam", "Joe"};
-	equiJoin_correct.insert(equiJoin_correct_film1);
-	equiJoin_correct.insert(equiJoin_correct_film2);
+	Comparable [] eqJ_correct1 = { "Star_Wars", 1977, 124, "sciFi", "Fox", 12345, "Star_Wars", 1977, "Han", "Luke", "Yoda", "Bob"};
+	Comparable [] eqJ_correct2 = { "Star_Wars_2", 1980, 124, "sciFi", "Fox", 12345, "Star_Wars_2", 1980, "Padme", "Jango", "Zam", "Joe"};
+	equiJoin_correct.insert(eqJ_correct1);
+	equiJoin_correct.insert(eqJ_correct2);
 	System.out.println("Equijoin: ");
 	equiJoin_correct.print();
 	System.out.println("result of movie.join(\"title year\", \"title year\",movie2 :" );
@@ -169,11 +178,13 @@ public class TableTest extends TestCase{
 	//    List<Comparable []> tuples2 = joinTable.getTuples();
 
 
-	Table naturalJoin = movie.join(movie2);
+	Table naturalJoin = movie_cast.join(movie2_cast);
+	System.out.println("Natural Join Table: ");
 	naturalJoin.print();
 
 	//ASSERT
 	assertTrue(equiJoin_correct.getTuples().size() == joinTable.getTuples().size());
+	assertTrue(equiJoin_correct.equals(joinTable));
 	//    Table selectTest = joinTable.select(new KeyType(new Comparable[]{"Star_Wars",1977}));
 	//    selectTest.print();
 
