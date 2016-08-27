@@ -1,11 +1,13 @@
 
 
+
 /****************************************************************************************
  * @file  Table.java
  *
  * @author   John Miller
  */
 
+package edu.uga.csci.cs4370;
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
@@ -22,6 +24,8 @@ import static java.lang.System.out;
 public class Table
            implements Serializable
 {
+    //you will need to fix this for your own directory structure here! 
+    public static final String ROOT_DIR = "/home/nick/";
     /** Relative path for storage directory
      */
     private static final String DIR = "store" + File.separator;
@@ -92,7 +96,7 @@ public class Table
      * @param _attribute  the string containing attributes names
      * @param _domain     the string containing attribute domains (data types)
      * @param _key        the primary key
-     * @param _tuple      the list of tuples containing the data
+     * @param _tuples      the list of tuples containing the data
      */
     public Table (String _name, String [] _attribute, Class [] _domain, String [] _key,
 		  List <Comparable []> _tuples)
@@ -111,6 +115,7 @@ public class Table
      * @param name        the name of the relation
      * @param attributes  the string containing attributes names
      * @param domains     the string containing attribute domains (data types)
+     * @param _key        the primary key for the table
      */
     public Table (String name, String attributes, String domains, String _key)
     {
@@ -137,26 +142,32 @@ public class Table
 	Comparable[] newTuple;
 	Comparable[] originalTuple;
 	int[] colPositions;
+	String [] attrs={};
 	List <Comparable []> rows = new ArrayList <> ();
 
 	out.println ("RA> " + name + ".project (" + attributes + ")");
-	String [] attrs     = attributes.split (" ");
+	//Check for empty attributes
+	if(attributes.trim().length()!=0){
+	     	attrs     = attributes.split (" ");
+	}
 	colPositions=match (attrs);
 	Class []  colDomain = extractDom (colPositions, domain);
 	String [] newKey    = (Arrays.asList (attrs).containsAll (Arrays.asList (key))) ? key : attrs;
-
-	for (int i=0;i<tuples.size();i++)
-	    {
-		newTuple=new Comparable[attrs.length];
-		originalTuple=tuples.get(i);
-		int k = 0;
-		for (int j=0;j<newTuple.length;j++)
-		    {
-			k = colPositions[j];
-			newTuple[j]=originalTuple[k];
-		    }
-		rows.add(newTuple);
-	    }
+	//ck for empty attributes
+	if(attrs.length>0){
+	    for (int i=0;i<tuples.size();i++)
+		{
+		    newTuple=new Comparable[attrs.length];
+		    originalTuple=tuples.get(i);
+		    int k = 0;
+		    for (int j=0;j<newTuple.length;j++)
+			{
+			    k = colPositions[j];
+			    newTuple[j]=originalTuple[k];
+			}
+		    rows.add(newTuple);
+		}
+	}
 	return new Table (name + count++, attrs, colDomain, newKey, rows);
     } // project
 
@@ -261,8 +272,8 @@ public class Table
      *
      * #usage movie.join ("studioNo", "name", studio)
      *
-     * @param attribute1  the attributes of this table to be compared (Foreign Key)
-     * @param attribute2  the attributes of table2 to be compared (Primary Key)
+     * @param attributes1  the attributes of this table to be compared (Foreign Key)
+     * @param attributes2  the attributes of table2 to be compared (Primary Key)
      * @param table2      the rhs table in the join operation
      * @return  a table with tuples satisfying the equality predicate
      */
@@ -289,9 +300,9 @@ public class Table
 	    for(int k = 0; k < t_attrs.length; k++){
 		final int in = k;
 		if(equalRows == null){
-		    equalRows = table2.select(t -> t[this.col(u_attrs[in])].equals(rowTable1[this.col(t_attrs[in])]));
+		    equalRows = table2.select(t -> t[table2.col(u_attrs[in])].equals(rowTable1[this.col(t_attrs[in])]));
 		} else{
-		    equalRows = equalRows.select(t -> t[this.col(u_attrs[in])].equals(rowTable1[this.col(t_attrs[in])]));
+		    equalRows = equalRows.select(t -> t[table2.col(u_attrs[in])].equals(rowTable1[this.col(t_attrs[in])]));
 		}
 	    }
 	    for(Comparable[] equalRow : equalRows.getTuples()){
@@ -380,7 +391,7 @@ public class Table
 	for (int i = 0; i < attribute.length; i++) {
 	    if (attr.equals (attribute [i])) return i;
 	} // for
-
+	System.out.println("IN COL() didn't match");
 	return -1;  // not found
     } // col
 
@@ -477,7 +488,7 @@ public class Table
     {
 	Table tab = null;
 	try {
-	    ObjectInputStream ois = new ObjectInputStream (new FileInputStream (DIR + name + EXT));
+	    ObjectInputStream ois = new ObjectInputStream (new FileInputStream (ROOT_DIR + DIR + name + EXT));
 	    tab = (Table) ois.readObject ();
 	    ois.close ();
 	} catch (IOException ex) {
@@ -496,7 +507,7 @@ public class Table
     public void save ()
     {
 	try {
-	    ObjectOutputStream oos = new ObjectOutputStream (new FileOutputStream (DIR + name + EXT));
+	    ObjectOutputStream oos = new ObjectOutputStream (new FileOutputStream (ROOT_DIR + DIR + name + EXT));
 	    oos.writeObject (this);
 	    oos.close ();
 	} catch (IOException ex) {
@@ -625,7 +636,11 @@ public class Table
 
 	return obj;
     } // extractDom
+    /**
+       Compare two tables for equality. 
 
+       @param other the Table object to comare this Table object to. 
+     **/
     public boolean equals(Table other){
 
         boolean allMatch;
@@ -643,21 +658,27 @@ public class Table
                 
                 allMatch=true;
                 comparableCt=0;
-                for (Comparable comp:movie)
-                {
-                    if (!comp.toString().equals(other_movie[comparableCt].toString()))
-                    {
-                        allMatch=false;
-                        System.out.println(comp.toString()+"!="+other_movie[comparableCt].toString());
-                        break;
-                    }
-                    comparableCt++;
-                }
-                if (allMatch)
-                {
-                    found=true;
-                    // System.out.println("Found!\n");
-                }
+		if(other.getTuples()!=null || other.getTuples().size()==0){
+		    for (Comparable comp:movie)
+			{
+			    if (!comp.toString().equals(other_movie[comparableCt].toString()))
+				{
+				    allMatch=false;
+				    System.out.println(comp.toString()+"!="+other_movie[comparableCt].toString());
+				    break;
+				}
+			    comparableCt++;
+			}
+		    if (allMatch)
+			{
+			    found=true;
+			    // System.out.println("Found!\n");
+			}
+		}
+		else{
+		    if (this.tuples==null || this.tuples.size()==0) return true;
+		    else return false;
+		}
         }
         if(!found) return false;
     }

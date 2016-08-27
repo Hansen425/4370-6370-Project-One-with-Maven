@@ -1,4 +1,4 @@
-
+package edu.uga.csci.cs4370;
 /*****************************************************************************************
  * @file  MovieDB.java
  *
@@ -86,6 +86,8 @@ class MovieDB
 	studio.insert (studio2);
 	studio.print ();
 
+	System.out.println("Going to start saving.");
+	
 	movie.save ();
 	cinema.save ();
 	movieStar.save ();

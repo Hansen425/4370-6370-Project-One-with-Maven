@@ -6,7 +6,7 @@
  * 
  * @see http://leepoint.net/notes-java/data/expressions/22compareobjects.html
  */
-
+package edu.uga.csci.cs4370;
 import java.io.Serializable;
 
 import static java.lang.System.out;
