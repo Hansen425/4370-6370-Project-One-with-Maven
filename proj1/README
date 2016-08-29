@@ -1,4 +1,4 @@
-This team is named Ace of 'Base
+This team is named Ace of 'Base.
 
 The team is composed of:
 
@@ -15,8 +15,7 @@ The mix of work for this project was:
     Justin Nix and Teresa : Implemented JOIN and assisted with bug fixes.
     Nick Klepp: Implemented MINUS and INDEX SELECT and managed team.
 
-This project is not an sbt project. It was completed with Maven. To execute a Main class (i.e. - Main.java) in the directory
-proj1/src/main/edu/uga/csci/cs4370/ do the following:
+This project is not an sbt project. It was completed with Maven. To execute a Main class (i.e. - Main.java) in the directory proj1/src/main/edu/uga/csci/cs4370/ do the following:
 
 1. navigate to the directory /proj1/
 2. execute
@@ -25,9 +24,8 @@ proj1/src/main/edu/uga/csci/cs4370/ do the following:
 
 3. execute
 
-       mvn exec:java -Dexec.mainClass="edu.uga.csci.cs4370.Main"
+       mvn exec:java -Dexec.mainClass="edu.uga.csci.cs4370"
 
 
-In order for the program to compile and run successfully you will have to supply your own valid root director as the ROOT_DIR private
-instance variable of the Table class. This is the first instance variable defined for the class. You should be able to find it and change it
-easily. Sorry, this was code provided to the team. 
+In order for the program to compile and run successfully you will have to supply your own valid root director as the ROOT_DIR private instance variable of the Table class.
+This is the first instance variable defined for the class. You should be able to find it and change it easily. Sorry, this was code provided to the team. 

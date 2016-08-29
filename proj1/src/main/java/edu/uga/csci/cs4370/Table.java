@@ -24,8 +24,10 @@ import static java.lang.System.out;
 public class Table
            implements Serializable
 {
-    //you will need to fix this for your own directory structure here! 
+    /**Relative path helper for storage directory
+     */
     public static final String ROOT_DIR = "/home/nick/";
+    
     /** Relative path for storage directory
      */
     private static final String DIR = "store" + File.separator;

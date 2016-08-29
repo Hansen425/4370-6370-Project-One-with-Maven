@@ -15,6 +15,9 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <properties>
+    <exec.mainClass>edu.uga.csci.cs4370.MovieDB</exec.mainClass>
+  </properties>
   <build>
     <plugins>
       <plugin>
@@ -25,7 +28,6 @@
           <source>1.8</source>
           <target>1.8</target>
 	  <mainClass>edu.uga.cs.cs4370</mainClass>
-	  <additionalparam>-Xdoclint:none</additionalparam>
         </configuration>
       </plugin>
     </plugins>
