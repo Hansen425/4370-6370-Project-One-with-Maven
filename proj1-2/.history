@@ -1,0 +1,6 @@
+compile
+clean
+exit
+compile
+build
+exit
